@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>デジタル御朱印帳 — プレミアム和風コレクション</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- SVG和紙フィルター効果 -->
+  <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="washi-paper-filter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+        <feDiffuseLighting in="noise" lighting-color="#fff" surfaceScale="1.5" result="light">
+          <feDistantLight azimuth="50" elevation="65" />
+        </feDiffuseLighting>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.9" />
+        </feComponentTransfer>
+        <feBlend mode="multiply" in="SourceGraphic" in2="light" />
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="app-container">
+    <!-- ヘッダー部分 -->
+    <header>
+      <div class="header-main">
+        <div class="logo-section">
+          <div class="logo-icon">印</div>
+          <div>
+            <h1 class="font-serif">デジタル御朱印帳</h1>
+            <p style="font-size: 0.85rem; color: var(--sumi-light); letter-spacing: 0.05em;">心静かに参拝の軌跡を綴る</p>
+          </div>
+        </div>
+        
+        <div class="action-buttons">
+          <button id="btn-add-goshuin" class="btn btn-primary" aria-label="新規参拝記録">
+            <span>⛩️</span> 参拝を記録する
+          </button>
+          <button id="btn-omikuji" class="btn btn-secondary" aria-label="おみくじを引く">
+            <span>🥠</span> おみくじ
+          </button>
+          <button id="btn-export-data" class="btn btn-secondary" aria-label="バックアップ保存">
+            <span>📤</span> 保存 (JSON)
+          </button>
+          <button id="btn-import-trigger" class="btn btn-secondary" aria-label="バックアップ復元">
+            <span>📥</span> 読込 (JSON)
+          </button>
+          <!-- 隠しインポート用input -->
+          <input type="file" id="file-import-data" accept=".json" style="display: none;">
+        </div>
+      </div>
+
+      <!-- 統計ダッシュボード -->
+      <div class="dashboard-stats">
+        <div class="stat-item">
+          <span class="stat-icon">📖</span>
+          <div>
+            <div class="stat-val" id="stat-total">0</div>
+            <div class="stat-label">総御朱印</div>
+          </div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon" style="color: var(--vermilion);">⛩️</span>
+          <div>
+            <div class="stat-val" id="stat-shrines">0</div>
+            <div class="stat-label">神社 (参拝)</div>
+          </div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon" style="color: var(--moss-green);">卍</span>
+          <div>
+            <div class="stat-val" id="stat-temples">0</div>
+            <div class="stat-label">寺院 (参拝)</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 検索 & フィルター -->
+    <section class="filter-section">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="search-input" placeholder="社寺名や所在地で探す...">
+      </div>
+      
+      <div class="filter-tabs" id="filter-tabs">
+        <button class="filter-tab active" data-type="all">すべて</button>
+        <button class="filter-tab" data-type="shrine">神社 ⛩️</button>
+        <button class="filter-tab" data-type="temple">寺院 卍</button>
+      </div>
+    </section>
+
+    <!-- 御朱印グリッド -->
+    <main>
+      <div class="goshuin-grid" id="goshuin-grid">
+        <!-- JSで動的に追加されます -->
+      </div>
+      
+      <!-- 空状態表示 -->
+      <div class="empty-state" id="empty-state" style="display: none;">
+        <div class="empty-icon">🏮</div>
+        <div class="empty-text">まだ御朱印帳に記録がありません。</div>
+        <button id="btn-empty-add" class="btn btn-primary">
+          最初の参拝を記録する
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- 新規作成・編集モーダル -->
+  <div class="modal-overlay" id="modal-editor">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2 class="modal-title font-serif" id="editor-modal-title">参拝の記録</h2>
+        <button class="modal-close" id="btn-close-editor" aria-label="閉じる">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="form-goshuin">
+          <!-- 隠しID入力 -->
+          <input type="hidden" id="entry-id">
+          
+          <div class="tabs-control">
+            <button type="button" class="tab-btn active" id="tab-btn-generate">朱印をデザインする</button>
+            <button type="button" class="tab-btn" id="tab-btn-upload">写真をアップロード</button>
+          </div>
+
+          <div class="editor-layout">
+            <!-- 左：リアルタイムプレビュー -->
+            <div class="preview-pane">
+              <span class="preview-label">御朱印プレビュー</span>
+              <div class="live-svg-container" id="live-svg-container">
+                <!-- SVGがJSで動的挿入される、またはアップロード画像が入る -->
+              </div>
+            </div>
+
+            <!-- 右：詳細設定フォーム -->
+            <div class="form-pane">
+              <!-- 基本情報 -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="input-name">神社仏閣名</label>
+                  <input type="text" id="input-name" class="form-control" placeholder="例: 清水寺, 明治神宮" required>
+                </div>
+                <div class="form-group">
+                  <label for="select-type">区分</label>
+                  <select id="select-type" class="form-control">
+                    <option value="shrine">神社 ⛩️</option>
+                    <option value="temple">寺院 卍</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="input-date">参拝日</label>
+                  <input type="date" id="input-date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="input-location">所在地 (都道府県・市区町村)</label>
+                  <input type="text" id="input-location" class="form-control" placeholder="例: 京都府京都市東山区">
+                </div>
+              </div>
+
+              <!-- デジタル朱印作成設定 (タブ: generate) -->
+              <div id="config-generate" class="tab-content active">
+                <div style="border-top: 1px dashed rgba(197,160,89,0.3); padding-top: 1rem; margin-top: 0.5rem;">
+                  <h3 class="font-serif" style="font-size: 1rem; color: var(--gold-dark); margin-bottom: 0.8rem;">朱印カスタマイズ</h3>
+                  
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="select-stamp-shape">朱印の形状</label>
+                      <select id="select-stamp-shape" class="form-control">
+                        <option value="circle">円印 (丸型)</option>
+                        <option value="square">角印 (正方形)</option>
+                        <option value="lotus">蓮華印 (お寺向け)</option>
+                        <option value="torii">鳥居印 (神社向け)</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="input-stamp-text">朱印の内字 (2〜4文字)</label>
+                      <input type="text" id="input-stamp-text" class="form-control" placeholder="例: 奉拝, 清水" maxlength="4" value="参拝">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="select-calligraphy-style">筆文字の書風</label>
+                    <select id="select-calligraphy-style" class="form-control">
+                      <option value="style-bold">豪快（太筆・墨多め）</option>
+                      <option value="style-flowing">流麗（細筆・草書風）</option>
+                      <option value="style-traditional">正統（楷書・隷書風）</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 写真アップロード設定 (タブ: upload) -->
+              <div id="config-upload" class="tab-content">
+                <div style="border-top: 1px dashed rgba(197,160,89,0.3); padding-top: 1rem; margin-top: 0.5rem;">
+                  <h3 class="font-serif" style="font-size: 1rem; color: var(--gold-dark); margin-bottom: 0.8rem;">御朱印の画像ファイル</h3>
+                  
+                  <div class="upload-dropzone" id="upload-dropzone">
+                    <span class="upload-icon">📷</span>
+                    <p style="font-weight: 500;">ここに写真をドラッグ＆ドロップ</p>
+                    <p style="font-size: 0.75rem; color: var(--sumi-light);">または ファイルを選択</p>
+                    <input type="file" id="file-photo-input" accept="image/*" style="display: none;">
+                  </div>
+
+                  <div class="upload-preview-container" id="upload-preview-container">
+                    <img id="upload-preview-img" class="upload-preview-img" src="" alt="アップロードプレビュー">
+                    <button type="button" class="remove-upload-btn" id="btn-remove-photo" aria-label="写真を削除">&times;</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- メモ・感想 -->
+              <div class="form-group" style="margin-top: 1.2rem;">
+                <label for="input-notes">参拝記・メモ</label>
+                <textarea id="input-notes" class="form-control" placeholder="境内の雰囲気、感じたこと、お天気などを自由に記録できます..."></textarea>
+              </div>
+
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn-cancel-editor">キャンセル</button>
+        <button type="submit" form="form-goshuin" class="btn btn-primary" id="btn-save-goshuin">朱印を納める</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 詳細表示モーダル -->
+  <div class="modal-overlay" id="modal-detail">
+    <div class="modal-window" style="max-width: 780px;">
+      <div class="modal-header">
+        <h2 class="modal-title font-serif">御朱印詳細</h2>
+        <button class="modal-close" id="btn-close-detail" aria-label="閉じる">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="detail-layout">
+          <!-- 左：和風額縁に入った御朱印 -->
+          <div class="detail-stamp-frame">
+            <div class="washi-texture"></div>
+            <div class="detail-stamp-content" id="detail-stamp-content">
+              <!-- JSで動的にSVGや画像が挿入されます -->
+            </div>
+          </div>
+
+          <!-- 右：参拝詳細情報 -->
+          <div class="detail-info-scroll">
+            <div class="detail-meta-list">
+              <div class="detail-meta-item">
+                <span id="detail-badge" class="card-badge shrine">神社</span>
+                <h3 class="detail-meta-value title font-serif" id="detail-name">清水寺</h3>
+              </div>
+              
+              <div class="detail-meta-item">
+                <div class="detail-meta-label">📅 参拝日</div>
+                <div class="detail-meta-value" id="detail-date">令和八年 六月六日</div>
+              </div>
+              
+              <div class="detail-meta-item">
+                <div class="detail-meta-label">📍 所在地</div>
+                <div class="detail-meta-value" id="detail-location">京都府京都市</div>
+              </div>
+              
+              <div class="detail-meta-item">
+                <div class="detail-meta-label">✍️ 参拝メモ</div>
+                <div class="detail-notes-box" id="detail-notes">
+                  静かな朝の参拝。風が通り抜けてとても心地よい空間でした。
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-actions">
+              <button class="btn btn-secondary" id="btn-edit-entry" style="flex-grow: 1;">
+                <span>✏️</span> 編集する
+              </button>
+              <button class="btn btn-danger" id="btn-delete-entry">
+                <span>🗑️</span> 削除
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- おみくじモーダル -->
+  <div class="modal-overlay" id="modal-omikuji">
+    <div class="modal-window" style="max-width: 450px;">
+      <div class="modal-header">
+        <h2 class="modal-title font-serif">本日のおみくじ</h2>
+        <button class="modal-close" id="btn-close-omikuji" aria-label="閉じる">&times;</button>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 420px; padding: 2rem;">
+        
+        <!-- おみくじ箱エリア -->
+        <div id="omikuji-box-area" class="omikuji-box-area" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+          <div class="omikuji-intro font-serif" style="margin-bottom: 2rem; font-size: 1.1rem; color: var(--sumi-dark); text-align: center;">
+            心を落ち着かせ、箱を振ってください
+          </div>
+          
+          <!-- 立体的なおみくじの木箱 -->
+          <div class="omikuji-box-wrapper">
+            <div class="omikuji-box" id="omikuji-box">
+              <div class="omikuji-box-top"></div>
+              <div class="omikuji-box-body"><span class="font-serif">御<br>神<br>籤</span></div>
+              <div class="omikuji-box-bottom"></div>
+              <div class="omikuji-stick" id="omikuji-stick"></div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-shake-box" style="margin-top: 2rem; width: 100%; font-size: 1.05rem;">
+            <span>🥠</span> おみくじを振る
+          </button>
+        </div>
+        
+        <!-- おみくじ結果（最初は隠す） -->
+        <div id="omikuji-result-area" class="omikuji-result-area" style="display: none; width: 100%; flex-direction: column; align-items: center;">
+          <div class="omikuji-slip-container">
+            <div class="omikuji-slip" id="omikuji-slip">
+              <div class="washi-texture"></div>
+              <div class="slip-header font-serif">吉凶</div>
+              <div class="slip-fortune font-serif" id="slip-fortune-val">大吉</div>
+              <div class="slip-details">
+                <div class="slip-detail-item"><span class="slip-detail-label">願望</span><span class="slip-detail-val" id="slip-wish">思うがままになるでしょう</span></div>
+                <div class="slip-detail-item"><span class="slip-detail-label">待人</span><span class="slip-detail-val" id="slip-waiter">驚くような便りあり</span></div>
+                <div class="slip-detail-item"><span class="slip-detail-label">失物</span><span class="slip-detail-val" id="slip-lost">見つかるでしょう</span></div>
+                <div class="slip-detail-item"><span class="slip-detail-label">旅行</span><span class="slip-detail-val" id="slip-travel">計画通りで吉</span></div>
+                <div class="slip-detail-item"><span class="slip-detail-label">商売</span><span class="slip-detail-val" id="slip-business">利益多し</span></div>
+                <div class="slip-detail-item"><span class="slip-detail-label">学問</span><span class="slip-detail-val" id="slip-study">安心して励みましょう</span></div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top: 1.5rem; text-align: center; color: var(--sumi-light); font-size: 0.8rem;" id="omikuji-date-label"></div>
+          <button type="button" class="btn btn-secondary" id="btn-pull-again" style="margin-top: 1rem; width: 100%;">
+            もう一度引く
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

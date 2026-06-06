@@ -1,0 +1,1122 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;500;600;700&display=swap');
+
+:root {
+  /* 和風伝統色パレット */
+  --sumi-black: #1a1a1a;
+  --sumi-dark: #2d2d2d;
+  --sumi-light: #4a4a4a;
+  --vermilion: #d3381c;
+  --vermilion-hover: #b62d14;
+  --vermilion-light: #fdf1ee;
+  --gold: #c5a059;
+  --gold-dark: #a27e38;
+  --gold-light: #f7f3e9;
+  --washi-cream: #fbf9f4;
+  --washi-white: #ffffff;
+  --moss-green: #5a7247;
+  --moss-light: #eff3eb;
+  --wood-brown: #8a6d4b;
+  --wood-light: #e5d8c6;
+  
+  /* システム共通 */
+  --font-serif: 'Shippori Mincho', 'Sawarabi Mincho', 'Noto Serif JP', serif;
+  --font-sans: 'Noto Sans JP', sans-serif;
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --shadow-hard: 0 20px 40px rgba(0, 0, 0, 0.15);
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 16px;
+  --transition-normal: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* リセット & ベース */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #f2ede2;
+  color: var(--sumi-black);
+  min-height: 100vh;
+  line-height: 1.6;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* 和紙の地模様 (CSSパターン) */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(var(--washi-cream) 20%, transparent 20%),
+    radial-gradient(var(--washi-cream) 20%, transparent 20%);
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 4px;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* スクロールバーのカスタマイズ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--washi-cream);
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--sumi-light);
+  border-radius: 4px;
+  border: 2px solid var(--washi-cream);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--vermilion);
+}
+
+/* 共通コンポーネント & ユーティリティ */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.washi-card {
+  background-color: var(--washi-white);
+  border: 1px solid rgba(197, 160, 89, 0.25);
+  box-shadow: var(--shadow-soft);
+  border-radius: var(--border-radius-md);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition-normal);
+}
+
+.washi-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-md);
+  transition: var(--transition-normal);
+}
+
+.washi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-medium);
+  border-color: var(--gold);
+}
+
+/* 主要レイアウト */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* ヘッダー */
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  border-bottom: 2px double rgba(197, 160, 89, 0.4);
+  padding-bottom: 2rem;
+  position: relative;
+}
+
+header::after {
+  content: '⛩️';
+  position: absolute;
+  bottom: -14px;
+  background: #f2ede2;
+  padding: 0 15px;
+  font-size: 1.25rem;
+}
+
+.header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-icon {
+  background: var(--vermilion);
+  color: var(--washi-white);
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  box-shadow: var(--shadow-soft);
+}
+
+h1 {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--sumi-black);
+  letter-spacing: 0.1em;
+  text-shadow: 1px 1px 0px var(--washi-white);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* ボタン共通 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  border: 1px solid transparent;
+  outline: none;
+  user-select: none;
+}
+
+.btn-primary {
+  background: var(--vermilion);
+  color: var(--washi-white);
+  box-shadow: 0 4px 10px rgba(211, 56, 28, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--vermilion-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(211, 56, 28, 0.3);
+}
+
+.btn-secondary {
+  background: var(--washi-white);
+  border: 1px solid var(--gold);
+  color: var(--sumi-black);
+}
+
+.btn-secondary:hover {
+  background: var(--gold-light);
+  color: var(--gold-dark);
+}
+
+.btn-danger {
+  background: #fdf3f2;
+  border: 1px solid rgba(211, 56, 28, 0.3);
+  color: var(--vermilion);
+}
+
+.btn-danger:hover {
+  background: var(--vermilion);
+  color: var(--washi-white);
+}
+
+/* ダッシュボード (統計) */
+.dashboard-stats {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+.stat-item {
+  background: var(--washi-white);
+  padding: 0.75rem 2rem;
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.stat-val {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--sumi-black);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--sumi-light);
+}
+
+.stat-icon {
+  font-size: 1.5rem;
+}
+
+/* 検索 & フィルター */
+.filter-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.search-wrapper {
+  position: relative;
+  flex-grow: 1;
+  max-width: 450px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1px solid rgba(197, 160, 89, 0.4);
+  background: var(--washi-white);
+  border-radius: var(--border-radius-md);
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  transition: var(--transition-normal);
+}
+
+.search-input:focus {
+  border-color: var(--vermilion);
+  box-shadow: 0 0 0 3px rgba(211, 56, 28, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gold-dark);
+  font-size: 1rem;
+}
+
+.filter-tabs {
+  display: flex;
+  background: rgba(197, 160, 89, 0.1);
+  padding: 0.3rem;
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(197, 160, 89, 0.15);
+}
+
+.filter-tab {
+  padding: 0.5rem 1.2rem;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--sumi-light);
+  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-normal);
+}
+
+.filter-tab.active {
+  background: var(--washi-white);
+  color: var(--sumi-black);
+  box-shadow: var(--shadow-soft);
+}
+
+.filter-tab.active[data-type="shrine"] {
+  color: var(--vermilion);
+}
+
+.filter-tab.active[data-type="temple"] {
+  color: var(--moss-green);
+}
+
+/* 御朱印グリッド */
+.goshuin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.goshuin-card {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 380px;
+}
+
+.card-stamp-area {
+  flex-grow: 1;
+  background-color: var(--washi-cream);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-bottom: 1px dashed rgba(197, 160, 89, 0.2);
+}
+
+/* Washi Paper texture inside cards */
+.washi-texture {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.03 0'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.8;
+}
+
+.card-stamp-preview {
+  width: 85%;
+  height: 85%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-sm);
+  background: var(--washi-white);
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.02);
+  padding: 0.5rem;
+  transition: var(--transition-smooth);
+}
+
+.goshuin-card:hover .card-stamp-preview {
+  transform: scale(1.03);
+}
+
+.card-stamp-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.card-info {
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: var(--washi-white);
+}
+
+.card-badge {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 30px;
+  line-height: 1;
+}
+
+.card-badge.shrine {
+  background: var(--vermilion-light);
+  color: var(--vermilion);
+  border: 1px solid rgba(211, 56, 28, 0.15);
+}
+
+.card-badge.temple {
+  background: var(--moss-light);
+  color: var(--moss-green);
+  border: 1px solid rgba(90, 114, 71, 0.15);
+}
+
+.card-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--sumi-black);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--sumi-light);
+  margin-top: 0.2rem;
+}
+
+/* 空状態のメッセージ */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--washi-white);
+  border: 2px dashed rgba(197, 160, 89, 0.3);
+  border-radius: var(--border-radius-lg);
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.empty-text {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  color: var(--sumi-light);
+  margin-bottom: 1.5rem;
+}
+
+/* モーダル共通 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(26, 26, 26, 0.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 1000;
+  padding: 1.5rem;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-window {
+  background: var(--washi-cream);
+  border-radius: var(--border-radius-lg);
+  border: 2px solid var(--gold);
+  width: 100%;
+  max-width: 850px;
+  max-height: 90vh;
+  box-shadow: var(--shadow-hard);
+  transform: scale(0.9) translateY(20px);
+  transition: var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.modal-overlay.active .modal-window {
+  transform: scale(1) translateY(0);
+}
+
+.modal-header {
+  padding: 1.2rem 2rem;
+  border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--washi-white);
+}
+
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--sumi-black);
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--sumi-light);
+  transition: var(--transition-normal);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.modal-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--vermilion);
+}
+
+.modal-body {
+  padding: 2rem;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.modal-footer {
+  padding: 1.2rem 2rem;
+  border-top: 1px solid rgba(197, 160, 89, 0.2);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  background: var(--washi-white);
+}
+
+/* フォーム要素 */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.2rem;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--sumi-light);
+  letter-spacing: 0.05em;
+}
+
+.form-control {
+  padding: 0.75rem;
+  border: 1px solid rgba(197, 160, 89, 0.4);
+  background: var(--washi-white);
+  border-radius: var(--border-radius-md);
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  transition: var(--transition-normal);
+}
+
+.form-control:focus {
+  border-color: var(--vermilion);
+  box-shadow: 0 0 0 3px rgba(211, 56, 28, 0.1);
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* タブ切替（デジタル/写真） */
+.tabs-control {
+  display: flex;
+  border-bottom: 2px solid rgba(197, 160, 89, 0.2);
+  margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: transparent;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  cursor: pointer;
+  position: relative;
+  color: var(--sumi-light);
+  transition: var(--transition-normal);
+}
+
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--vermilion);
+  transform: scaleX(0);
+  transition: var(--transition-normal);
+}
+
+.tab-btn.active {
+  color: var(--vermilion);
+  font-weight: 700;
+}
+
+.tab-btn.active::after {
+  transform: scaleX(1);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* 新規追加モーダルの分割レイアウト */
+.editor-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .editor-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* リアルタイムプレビュー画面 */
+.preview-pane {
+  background: var(--washi-white);
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  border-radius: var(--border-radius-md);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+  position: sticky;
+  top: 0;
+}
+
+.preview-label {
+  font-size: 0.8rem;
+  color: var(--sumi-light);
+  margin-bottom: 0.5rem;
+  font-family: var(--font-serif);
+}
+
+.live-svg-container {
+  width: 250px;
+  height: 250px;
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-soft);
+  background: var(--washi-white);
+  position: relative;
+}
+
+/* アップロードエリア */
+.upload-dropzone {
+  border: 2px dashed rgba(197, 160, 89, 0.4);
+  background: var(--washi-white);
+  border-radius: var(--border-radius-md);
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.upload-dropzone:hover {
+  border-color: var(--vermilion);
+  background: var(--vermilion-light);
+}
+
+.upload-icon {
+  font-size: 3rem;
+  color: var(--gold);
+}
+
+.upload-preview-container {
+  width: 100%;
+  max-width: 250px;
+  height: 250px;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  margin: 1rem auto 0;
+  display: none;
+  position: relative;
+}
+
+.upload-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fcfcfc;
+}
+
+.remove-upload-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: var(--transition-normal);
+}
+
+.remove-upload-btn:hover {
+  background: var(--vermilion);
+}
+
+/* 詳細表示モーダルの和風額縁レイアウト */
+.detail-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .detail-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.detail-stamp-frame {
+  background: var(--washi-white);
+  border: 10px solid var(--wood-brown);
+  outline: 2px solid var(--gold);
+  box-shadow: var(--shadow-medium), inset 0 0 20px rgba(0,0,0,0.05);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  position: relative;
+}
+
+.detail-stamp-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-stamp-content img,
+.detail-stamp-content svg {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.detail-info-scroll {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-left: 2px double rgba(197, 160, 89, 0.3);
+  padding-left: 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .detail-info-scroll {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px dashed rgba(197, 160, 89, 0.3);
+    padding-top: 1.5rem;
+  }
+}
+
+.detail-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.detail-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.detail-meta-label {
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  color: var(--gold-dark);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.detail-meta-value {
+  font-size: 1.1rem;
+  color: var(--sumi-black);
+}
+
+.detail-meta-value.title {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.detail-notes-box {
+  background: var(--washi-white);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  border-radius: var(--border-radius-md);
+  padding: 1.2rem;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  min-height: 120px;
+  white-space: pre-wrap;
+  color: var(--sumi-dark);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.01);
+  line-height: 1.7;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+/* サティスファクション演出（スタンプアニメーション） */
+@keyframes stampDown {
+  0% {
+    transform: scale(3) rotate(15deg);
+    opacity: 0;
+    filter: blur(4px);
+  }
+  70% {
+    transform: scale(0.95) rotate(-3deg);
+    opacity: 0.9;
+  }
+  85% {
+    transform: scale(1.05) rotate(1deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.stamp-animation {
+  animation: stampDown 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  20%, 60% { transform: translate(-3px, 1px); }
+  40%, 80% { transform: translate(3px, -1px); }
+}
+
+.shake-animation {
+  animation: shake 0.15s ease-in-out;
+}
+
+/* おみくじ */
+.omikuji-box-wrapper {
+  width: 170px;
+  height: 210px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 700px;
+}
+
+.omikuji-box {
+  width: 120px;
+  height: 175px;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.omikuji-box-top,
+.omikuji-box-bottom,
+.omikuji-box-body {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  border: 2px solid rgba(75, 48, 25, 0.35);
+  background: linear-gradient(135deg, #a97a4a, #6f4828);
+  box-shadow: inset 0 0 12px rgba(255,255,255,0.12), var(--shadow-soft);
+}
+
+.omikuji-box-top {
+  top: 0;
+  height: 26px;
+  border-radius: 8px 8px 3px 3px;
+}
+
+.omikuji-box-top::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  width: 34px;
+  height: 8px;
+  background: rgba(35, 20, 12, 0.75);
+  border-radius: 999px;
+  transform: translateX(-50%);
+}
+
+.omikuji-box-body {
+  top: 22px;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--washi-white);
+  font-size: 1.45rem;
+  letter-spacing: 0.12em;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.35);
+}
+
+.omikuji-box-bottom {
+  bottom: 0;
+  height: 30px;
+  border-radius: 3px 3px 8px 8px;
+}
+
+.omikuji-stick {
+  position: absolute;
+  left: 50%;
+  top: -12px;
+  width: 9px;
+  height: 78px;
+  background: linear-gradient(90deg, #f8efd9, #d9bd83);
+  border: 1px solid rgba(75, 48, 25, 0.25);
+  border-radius: 999px;
+  opacity: 0;
+  transform: translateX(-50%) translateY(34px);
+}
+
+.stick-pop {
+  animation: stickPop 0.7s ease forwards;
+}
+
+@keyframes stickPop {
+  0% { opacity: 0; transform: translateX(-50%) translateY(34px); }
+  45% { opacity: 1; transform: translateX(-50%) translateY(-22px); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(-8px); }
+}
+
+.omikuji-slip-container {
+  width: min(100%, 320px);
+}
+
+.omikuji-slip {
+  position: relative;
+  overflow: hidden;
+  background: var(--washi-white);
+  border: 1px solid rgba(197, 160, 89, 0.35);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-medium);
+  padding: 1.4rem;
+  transform: translateY(10px);
+  opacity: 0;
+}
+
+.slip-reveal {
+  animation: slipReveal 0.45s ease forwards;
+}
+
+@keyframes slipReveal {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slip-header {
+  position: relative;
+  color: var(--gold-dark);
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+.slip-fortune {
+  position: relative;
+  color: var(--vermilion);
+  font-size: 2.8rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.slip-details {
+  position: relative;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.slip-detail-item {
+  display: grid;
+  grid-template-columns: 4.5em 1fr;
+  gap: 0.75rem;
+  align-items: start;
+  border-top: 1px dashed rgba(197, 160, 89, 0.32);
+  padding-top: 0.65rem;
+}
+
+.slip-detail-label {
+  color: var(--gold-dark);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.slip-detail-val {
+  color: var(--sumi-dark);
+  font-size: 0.9rem;
+}
+
+/* カスタムSVGスタンプ用のスタイル */
+.svg-calligraphy {
+  font-family: var(--font-serif);
+  dominant-baseline: central;
+  text-anchor: middle;
+  fill: var(--sumi-black);
+}
+
+.svg-stamp {
+  fill: none;
+  stroke: var(--vermilion);
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+}
+
+.svg-stamp-text {
+  font-family: var(--font-serif);
+  font-size: 12px;
+  fill: var(--vermilion);
+  font-weight: 900;
+  text-anchor: middle;
+  dominant-baseline: central;
+  letter-spacing: 2px;
+}
